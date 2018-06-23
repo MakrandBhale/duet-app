@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Duet</string>
+    <string name="login_text">Log in</string>
+    <string name="email_text_hint">Email</string>
+    <string name="username_text_hint">Username</string>
+    <string name="password_text_hint">Password</string>
+    <string name="already_member">Already a member?</string>
+    <string name="not_a_member">Not a member? </string>
+    <string name="signup_link"> Sign up</string>
+
+
+</resources>

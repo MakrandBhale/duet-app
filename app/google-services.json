@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "590140937352",
+    "firebase_url": "https://duetmessenger.firebaseio.com",
+    "project_id": "duetmessenger",
+    "storage_bucket": "duetmessenger.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:590140937352:android:aeacd06ba337747f",
+        "android_client_info": {
+          "package_name": "com.makarand.duet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "590140937352-i2biqqs2l1tuin57h2fnfsganjdiptjm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.makarand.duet",
+            "certificate_hash": "d953ecf5fdd8a55c92fdf97a06801a3bdfda1ddb"
+          }
+        },
+        {
+          "client_id": "590140937352-6viteqoh4m4m7nd41cb2rj48dpcpvr2j.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "590140937352-6viteqoh4m4m7nd41cb2rj48dpcpvr2j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBPqg7iz6lHiIDfIJocSUW2Tuc5UNKhcVI"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "590140937352-6viteqoh4m4m7nd41cb2rj48dpcpvr2j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
