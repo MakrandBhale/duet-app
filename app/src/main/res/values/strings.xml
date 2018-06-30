@@ -7,6 +7,16 @@
     <string name="already_member">Already a member?</string>
     <string name="not_a_member">Not a member? </string>
     <string name="signup_link"> Sign up</string>
-
-
+    <string name="welcome_message">Welcome friend</string>
+    <string name="welcome_message_subtitle">One last step to connect with your loved one.</string>
+    <string name="welcome_copy_message">Click the \"Copy ID\" button to copy an ID and share it with your partner.</string>
+    <string name="or">OR</string>
+    <string name="already_got_ID">Do you have an ID? </string>
+    <string name="paste_it_here">Paste the ID here and click \"Connect\"</string>
+    <string name="yes">Yeah</string>
+    <string name="no">Nah</string>
+    <string name="connect">Connect</string>
+    <string name="back">Go Back</string>
+    <string name="chatroom_created">Great! you\'ve created chatroom, now Copy the ID and share it with your partner</string>
+    <string name="chatroom_lonely">Chatroom was created, however your partner has not joined yet. Wait for them to join.</string>
 </resources>

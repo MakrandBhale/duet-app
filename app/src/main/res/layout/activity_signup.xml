@@ -6,16 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".LoginActivity"
     android:background="@color/secondaryColor"
-    android:padding="8dp"
     >
     <!--<include-->
     <!--android:id="@+id/toolbar"-->
     <!--layout="@layout/toolbar"/>-->
+
     <LinearLayout
+        android:layout_margin="8dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
+        android:foregroundGravity="center_horizontal"
         android:layout_marginTop="36dp"
         >
         <TextView
@@ -100,10 +102,15 @@
                 />
         </LinearLayout>
     </LinearLayout>
+
     <ProgressBar
-        android:layout_width="wrap_content"
+        android:id="@+id/progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        style="?android:attr/progressBarStyleLarge"
-        android:layout_centerInParent="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="0dp"
+        android:visibility="gone"
         />
+
 </RelativeLayout>
