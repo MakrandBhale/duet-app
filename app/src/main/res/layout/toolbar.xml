@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
-    android:background="@color/primaryColor"
-    android:elevation="4dp"
+    android:layout_height="?android:attr/actionBarSize"
+    android:background="@color/secondaryColor"
+    android:elevation="0dp"
     android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-    app:popupTheme="@style/ThemeOverlay.AppCompat.Light">
+    app:popupTheme="@style/ThemeOverlay.AppCompat.Dark">
 
     <TextView
         android:id="@+id/app_title"
@@ -15,7 +15,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="@string/app_name"
-        android:textColor="@color/primaryTextColor"
+        android:textColor="@color/secondaryTextColor"
         android:textSize="24sp"
+        android:fontFamily="@font/nunito_semibold"
         />
 </android.support.v7.widget.Toolbar>

@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Duet</string>
+    <string name="subtitle">A private messenger for couples.</string>
     <string name="login_text">Log in</string>
     <string name="email_text_hint">Email</string>
     <string name="username_text_hint">Username</string>

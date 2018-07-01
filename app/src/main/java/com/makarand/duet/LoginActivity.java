@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.password) EditText password;
     @BindView(R.id.signup_link) TextView signupLink;
     @BindView(R.id.login_button) Button loginButton;
+    @BindView(R.id.waiter) ProgressBar waiter;
     private FirebaseAuth mAuth;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,36 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         setTitle(null);
-        mAuth = FirebaseAuth.getInstance();
-        try {
-            if (FirebaseAuth.getInstance().getCurrentUser() != null) {
-                Constants.myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                DatabaseReference myPersonalInfo = FirebaseDatabase.getInstance().getReference("users/"+Constants.myUid+"/personal/");
-                myPersonalInfo.addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        try {
-                            if ((Boolean) dataSnapshot.child("partnerConnected").getValue()) {
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                finish();
-                            }
-                        }
-                        catch (Exception e){
-                            Toast.makeText(getApplicationContext(), "Error occurred, check your internet connection", Toast.LENGTH_LONG).show();
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                    }
-                });
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
-
         loginButton = findViewById(R.id.login_button);
         signupLink = findViewById(R.id.signup_link);
         signupLink.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +57,7 @@ public class LoginActivity extends AppCompatActivity {
 
     @OnClick(R.id.login_button)
     void login(){
+        waiter.setVisibility(View.VISIBLE);
         String emailText = email.getText().toString().trim();
         String passwordText = password.getText().toString().trim();
         if(emailText.length() > 0 && passwordText.length() > 0){
@@ -94,6 +67,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
                                 Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_LONG).show();
+                                waiter.setVisibility(View.GONE);
                             }
                         }
                     })
@@ -102,6 +76,7 @@ public class LoginActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(getApplicationContext(),"Error: " + e.getMessage()  ,Toast.LENGTH_LONG).show();
                             Log.e("Login error", e.getMessage());
+                            waiter.setVisibility(View.GONE);
                         }
                     });
         }

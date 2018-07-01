@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -59,9 +60,8 @@ public class WelcomeActivity extends AppCompatActivity {
     @BindView(R.id.connect_button) Button connectButton;
     @BindView(R.id.have_id_edittext) EditText haveIDEdittext;
     @BindView(R.id.next_button) Button nextButton;
-    String myUid = null;
-    //    chatroom is global referance to the chatroom. open is the respective chatroom public info branch.
-    DatabaseReference chatRooms, open, personalChatroom, myPersonalInfoRef;
+    //    chatroom is global reference to the chatroom. open is the respective chatroom public info branch.
+    DatabaseReference  open, personalChatroom, myPersonalInfoRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,10 +104,22 @@ public class WelcomeActivity extends AppCompatActivity {
     }
     private void moveOn(){
         Constants.partnerConnected = true;
+        storeUserInfo();
         myPersonalInfoRef.child("partnerConnected").setValue(true);
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
     }
+
+    public void storeUserInfo(){
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("myPref", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("myUid", Constants.myUid);
+        editor.putString("myChatRoomID", Constants.myChatRoomID);
+        editor.putString("partnerID", Constants.partnerID);
+        editor.putBoolean("partnerConnected", Constants.partnerConnected);
+        editor.apply();
+    }
+
     private void setupListener() {
         /*A listener established when the partner accepts the request. */
         DatabaseReference partnerListener = FirebaseDatabase.getInstance().getReference("chatrooms/"+Constants.myChatRoomID+"/open/");
@@ -176,7 +188,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         * also update the partner key in your own personal user info branch.
                         * upon updation of the your local info your partner will update it automatically.
                         *
-                        * Also write the chatRoom for ourself*/
+                        * Also write the chatRoom for ourselves*/
                         String partnerID = (String) dataSnapshot.child("open").child("p1").getValue();
                         chatRoomRef.child("open").child("p2").setValue(Constants.myUid);
                         myPersonalInfoRef.child("partner").setValue(partnerID);

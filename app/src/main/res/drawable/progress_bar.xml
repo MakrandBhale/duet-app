@@ -1,0 +1,11 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--<gradient-->
+    <!--android:endColor="@color/primaryColor"-->
+    <!--android:centerColor="@color/primaryLightColor"-->
+    <!--android:startColor="@color/secondaryColor"-->
+    <!--android:angle="270" />-->
+    <stroke
+        android:width="1dp"
+        android:color="@color/secondaryColor" />
+    <solid android:color="@color/secondaryColor" />
+</shape>
