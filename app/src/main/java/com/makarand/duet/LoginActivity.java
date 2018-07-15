@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
-
+        mAuth = FirebaseAuth.getInstance();
         setTitle(null);
         loginButton = findViewById(R.id.login_button);
         signupLink = findViewById(R.id.signup_link);
@@ -68,6 +68,7 @@ public class LoginActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
                                 Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_LONG).show();
                                 waiter.setVisibility(View.GONE);
+                                startActivity(new Intent(getApplicationContext(), Splash.class));
                             }
                         }
                     })

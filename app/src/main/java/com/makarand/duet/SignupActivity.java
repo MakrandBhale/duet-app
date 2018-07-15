@@ -29,9 +29,9 @@ public class SignupActivity extends AppCompatActivity {
     @BindView(R.id.email) EditText email;
     @BindView(R.id.password) EditText password;
     @BindView(R.id.username) EditText username;
-    @BindView(R.id.login_text) TextView loginLink;
     @BindView(R.id.signup_button) Button signupButton;
     @BindView(R.id.progress_bar) ProgressBar waiter;
+    @BindView(R.id.login_link) TextView loginLink;
     FirebaseAuth mAuth;
     DatabaseReference dbRef;
     @Override
@@ -40,7 +40,12 @@ public class SignupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_signup);
         ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
-
+        loginLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+            }
+        });
     }
 
     @OnClick(R.id.signup_button)
@@ -78,7 +83,7 @@ public class SignupActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        startActivity(new Intent(SignupActivity.this, WelcomeActivity.class));
+                        startActivity(new Intent(SignupActivity.this, Splash.class));
                         finish();
                         toggleBar(false);
                     }
@@ -100,8 +105,7 @@ public class SignupActivity extends AppCompatActivity {
         if(bool)
             waiter.setVisibility(View.VISIBLE);
         else
-            waiter.setVisibility(View.GONE);
-
+        waiter.setVisibility(View.GONE);
         waiter.setIndeterminate(bool);
         email.setEnabled(!bool);
         password.setEnabled(!bool);

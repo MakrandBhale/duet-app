@@ -52,6 +52,7 @@ public class WelcomeActivity extends AppCompatActivity {
     @BindView(R.id.step_two) LinearLayout stepTwo;
     @BindView(R.id.withID) LinearLayout withID;
     @BindView(R.id.withoutID) LinearLayout withoutID;
+    @BindView(R.id.wait_page) LinearLayout waitPage;
     @BindView(R.id.back_button) ImageButton backButton;
     @BindView(R.id.newID) EditText newID;
     @BindView(R.id.try_again) Button tryAgain;
@@ -60,8 +61,8 @@ public class WelcomeActivity extends AppCompatActivity {
     @BindView(R.id.connect_button) Button connectButton;
     @BindView(R.id.have_id_edittext) EditText haveIDEdittext;
     @BindView(R.id.next_button) Button nextButton;
-    //    chatroom is global reference to the chatroom. open is the respective chatroom public info branch.
-    DatabaseReference  open, personalChatroom, myPersonalInfoRef;
+    //    chatroom is global reference to the chatroom. openChatroomRef is the respective chatroom public info branch.
+    DatabaseReference openChatroomRef, personalChatroomRef, myPersonalInfoRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,20 +76,25 @@ public class WelcomeActivity extends AppCompatActivity {
          * this myChatRoomID effectively reflects to the chatrooms*/
         if(FirebaseAuth.getInstance().getCurrentUser() != null) {
             Constants.myUid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+            Log.i("littleSteps", "UserLogged in:" + Constants.myUid);
             waiter.setVisibility(View.VISIBLE);
             nextButton.setVisibility(View.GONE);
             myPersonalInfoRef = FirebaseDatabase.getInstance().getReference("users/"+ Constants.myUid+"/personal");
             myPersonalInfoRef.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.i("littleSteps", "Checking personal info tree.");
                     Constants.myChatRoomID = (String) dataSnapshot.child("chatRoom").getValue();
                     Constants.partnerID = (String) dataSnapshot.child("partner").getValue();
-                    if(Constants.myChatRoomID == null || Constants.myChatRoomID.equals("undef"))
+                    if(Constants.myChatRoomID == null || Constants.myChatRoomID.equals("undef")) {
                         Constants.myChatRoomID = Constants.chatRoomRef.push().getKey();
+                        Log.i("littleSteps", "myChatRoomID is either null or undef so creating new.");
+                    }
                     newID.setText(Constants.myChatRoomID);
-                    personalChatroom = FirebaseDatabase.getInstance().getReference("users/"+ Constants.myUid +"/personal/chatRoom/");
-                    open = FirebaseDatabase.getInstance().getReference("chatrooms/"+ Constants.myChatRoomID +"/open/");
-                    setupListener();
+                    Log.i("littleSteps", "myChatRoomID: "+ Constants.myChatRoomID);
+                    personalChatroomRef = FirebaseDatabase.getInstance().getReference("users/"+ Constants.myUid +"/personal/chatRoom/");
+                    openChatroomRef = FirebaseDatabase.getInstance().getReference("chatrooms/"+ Constants.myChatRoomID +"/open/");
+                    setupListenerForPartner();
                 }
 
                 @Override
@@ -103,15 +109,17 @@ public class WelcomeActivity extends AppCompatActivity {
         }
     }
     private void moveOn(){
+        Log.i("littleSteps", "partner is connected, all good to go. Populating sharedPrefs.");
         Constants.partnerConnected = true;
-        storeUserInfo();
+        storeUserInfoToLocalStorage();
         myPersonalInfoRef.child("partnerConnected").setValue(true);
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
     }
 
-    public void storeUserInfo(){
-        SharedPreferences pref = getApplicationContext().getSharedPreferences("myPref", MODE_PRIVATE);
+    public void storeUserInfoToLocalStorage(){
+        Log.i("littleSteps", "Updating SharedPrefs");
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("duet_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
         editor.putString("myUid", Constants.myUid);
         editor.putString("myChatRoomID", Constants.myChatRoomID);
@@ -120,25 +128,61 @@ public class WelcomeActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    private void setupListener() {
+    public void updateConstants(DataSnapshot data){
+        Log.i("littleSteps", "Updating Constants");
+        DatabaseReference personalChatRoom = FirebaseDatabase.getInstance().getReference("users/"+Constants.myUid+"/personal");
+        personalChatRoom.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Constants.myChatRoomID = (String) dataSnapshot.child("chatRoom").getValue();
+                Constants.partnerID = (String) dataSnapshot.child("partner").getValue();
+                Constants.partnerConnected = (Boolean) dataSnapshot.child("partnerConnected").getValue();
+                Log.i("littleSteps", "Constants updated now updating sharedPrefs");
+                storeUserInfoToLocalStorage();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+
+    private void setupListenerForPartner() {
         /*A listener established when the partner accepts the request. */
+        Log.i("littleSteps", "setting up listener");
         DatabaseReference partnerListener = FirebaseDatabase.getInstance().getReference("chatrooms/"+Constants.myChatRoomID+"/open/");
         partnerListener.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.i("littleSteps", "Data changed in firebase chatroom info tree");
+                updateConstants(dataSnapshot);
                 final ChatroomOpen chatroomOpen = dataSnapshot.getValue(ChatroomOpen.class);
+                Log.i("littleSteps", "received chatroom details from firebase.");
                 try {
                     final String p2 = chatroomOpen.getP2();
-                    if(!(p2.equals(Constants.myUid)) && !(p2.equals("undef"))){
+                    Log.i("littleSteps", "Partner is: " + p2);
+                    if((p2.equals(Constants.myUid)) || (p2.equals("undef"))){
+                        Log.i("littleSteps", "partner is not defined.");
+                        stepOne.setVisibility(View.GONE);
+                        waitPage.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        Log.i("littleSteps", "partner id is valid & is !null");
                         myPersonalInfoRef.child("partner").setValue(p2)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
+                                        Log.i("littleSteps", "successfully added the partner to personal info tree.");
+
                                         /*TODO : show the notification is partner accepted the request.*/
                                         DatabaseReference partnerInfo = FirebaseDatabase.getInstance().getReference("users/"+p2+"/open");
+                                        Log.i("littleSteps", "getting partner info.");
+
                                         partnerInfo.addListenerForSingleValueEvent(new ValueEventListener() {
                                             @Override
                                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                                Log.i("littleSteps", "partner connected.");
                                                 Constants.partnerConnected = true;
                                                 Toast.makeText(getApplicationContext(), "Congratulations! "+dataSnapshot.child("username").getValue() +" is on board.", Toast.LENGTH_LONG).show();
                                                 moveOn();
@@ -147,6 +191,7 @@ public class WelcomeActivity extends AppCompatActivity {
                                             }
                                             @Override
                                             public void onCancelled(@NonNull DatabaseError databaseError) {
+                                                Log.e("databaseError", databaseError.getDetails());
                                                 waiter.setVisibility(View.GONE);
                                                 nextButton.setVisibility(View.VISIBLE);
                                             }
@@ -154,6 +199,7 @@ public class WelcomeActivity extends AppCompatActivity {
                                     }
                                 });
                     }
+
                 }
                 catch (Exception e){
                     //Toast.makeText(getApplicationContext(), "Error occurred, try again later.", Toast.LENGTH_LONG).show();
@@ -166,7 +212,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.e("databaseError", databaseError.getDetails());
             }
         });
     }
@@ -220,11 +266,11 @@ public class WelcomeActivity extends AppCompatActivity {
         /*setting chatroom myChatRoomID in to user info branch*/
         ChatroomOpen op = new ChatroomOpen(Constants.myUid, "undef");
         /*the p1 refers to the current person, while p2 refers to the partner*/
-        open.setValue(op)
+        openChatroomRef.setValue(op)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        personalChatroom.setValue(Constants.myChatRoomID)
+                        personalChatroomRef.setValue(Constants.myChatRoomID)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
@@ -275,7 +321,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
         button.setVisibility(View.GONE);
         waiter.setVisibility(View.VISIBLE);
-        personalChatroom.addValueEventListener(new ValueEventListener() {
+        personalChatroomRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 String val = (String) dataSnapshot.getValue();
@@ -316,8 +362,8 @@ public class WelcomeActivity extends AppCompatActivity {
         * we don't want the empty tree to be orphaned thus eliminate it.
         * Its done in following line.
         * also removing the chatroom Constants.myChatRoomID stored in the user private info tree*/
-        open.setValue(null);
-        personalChatroom.setValue(null);
+        openChatroomRef.setValue(null);
+        personalChatroomRef.setValue(null);
         if(stepTwo.getVisibility() == View.GONE)
             stepTwo.setVisibility(View.VISIBLE);
 

@@ -20,16 +20,16 @@
         android:foregroundGravity="center_horizontal"
         android:layout_marginTop="36dp"
         >
+
         <TextView
+            android:id="@+id/signup_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/signup_link"
-            android:textAlignment="center"
-            android:textSize="36sp"
-            android:id="@+id/login_text"
             android:layout_margin="24dp"
             android:fontFamily="@font/nunito_bold"
-            />
+            android:text="@string/signup_link"
+            android:textAlignment="center"
+            android:textSize="36sp" />
 
         <EditText
             android:id="@+id/email"
@@ -92,14 +92,14 @@
                 android:text="@string/not_a_member"
                 android:fontFamily="@font/nunito_regular"
                 />
+
             <TextView
-                android:id="@+id/signup_link"
+                android:id="@+id/login_link"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=" Log in"
-                android:textColor="@color/primaryColor"
                 android:fontFamily="@font/nunito_semibold"
-                />
+                android:text=" Log in"
+                android:textColor="@color/primaryColor" />
         </LinearLayout>
     </LinearLayout>
 
