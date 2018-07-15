@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,14 +15,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.makarand.duet.Constants.Constants;
-import com.makarand.duet.model.User;
+import com.makarand.duet.SharedPrefs.SharedPrefs;
+import com.makarand.duet.model.ChatroomOpen;
 
 public class Splash extends AppCompatActivity {
     FirebaseAuth mAuth;
     SharedPreferences sharedPreferences;
     SharedPreferences.Editor editor;
-
-
+    DatabaseReference myPersonalInfo;
+    SharedPrefs sharedPrefs;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +37,7 @@ public class Splash extends AppCompatActivity {
         else {
             /* User is logged in and get uid, write to the the Constants.*/
             Constants.myUid = mAuth.getCurrentUser().getUid();
+            myPersonalInfo = FirebaseDatabase.getInstance().getReference("users/"+Constants.myUid+"/personal/");
             /*sharedPreferences contains the shared preferences object.*/
             sharedPreferences = getApplicationContext().getSharedPreferences("duet_prefs", MODE_PRIVATE);
             /* Even if the data is not available sharedPrefs have 'default' value, which in this case is set to
@@ -54,8 +54,12 @@ public class Splash extends AppCompatActivity {
                 finish();
             }
             else {
-                setupListener();
+                setupPersonalInfoListener();
             }
+            /* a chatroom listener is used to check if any changes occur in the chatroom tree.
+            * for ex. if one partner decides to bail out, that will effectively write "undef" and this
+            * listener will make sure that other partner will be redirected to the Welcome activity.*/
+            setupChatRoomListener();
         }
     }
     public void writeDataToConstants(){
@@ -67,9 +71,47 @@ public class Splash extends AppCompatActivity {
         Constants.partnerID = sharedPreferences.getString("partnerID", "undef");
     }
 
+    public void storeUserInfoToLocalStorage(String myUid, String myChatRoomID, String partnerID, Boolean partnerConnected){
+        Log.i("littleSteps", "Updating SharedPrefs");
+        SharedPreferences pref = getApplicationContext().getSharedPreferences("duet_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putString("myUid", Constants.myUid);
+        editor.putString("myChatRoomID", Constants.myChatRoomID);
+        editor.putString("partnerID", Constants.partnerID);
+        editor.putBoolean("partnerConnected", Constants.partnerConnected);
+        editor.apply();
+    }
 
-    public void setupListener(){
-        DatabaseReference myPersonalInfo = FirebaseDatabase.getInstance().getReference("users/"+Constants.myUid+"/personal/");
+    public void setupChatRoomListener(){
+        /* A listener for chatrooms.*/
+        if(Constants.myChatRoomID.equals("undef"))
+            // if the myChatRoomID returns "undef" then sharedPrefs are not yet initialised. Fall Back.
+            return;
+        DatabaseReference chatRoomRef = FirebaseDatabase.getInstance().getReference("chatrooms/"+ Constants.myChatRoomID + "/open");
+        Log.i("littleSteps", "checking the chatroom has both participants");
+        chatRoomRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                ChatroomOpen open = dataSnapshot.getValue(ChatroomOpen.class);
+                if(open.getP1().equals("undef") || open.getP2().equals("undef")){
+                    Log.i("littleSteps", "one of the partner is missing, changing personal info tree.");
+                    startActivity(new Intent(getApplicationContext(), WelcomeActivity.class));
+                    myPersonalInfo.child("partner").setValue("undef");
+                    myPersonalInfo.child("partnerConnected").setValue("undef");
+                    storeUserInfoToLocalStorage();
+                    finish();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+    public void setupPersonalInfoListener(){
+        /*A listener for the personal info tree.*/
+
         myPersonalInfo.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

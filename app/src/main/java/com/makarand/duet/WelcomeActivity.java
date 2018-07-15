@@ -128,17 +128,22 @@ public class WelcomeActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    public void updateConstants(DataSnapshot data){
+    public void updateConstants(){
         Log.i("littleSteps", "Updating Constants");
         DatabaseReference personalChatRoom = FirebaseDatabase.getInstance().getReference("users/"+Constants.myUid+"/personal");
         personalChatRoom.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Constants.myChatRoomID = (String) dataSnapshot.child("chatRoom").getValue();
-                Constants.partnerID = (String) dataSnapshot.child("partner").getValue();
-                Constants.partnerConnected = (Boolean) dataSnapshot.child("partnerConnected").getValue();
-                Log.i("littleSteps", "Constants updated now updating sharedPrefs");
-                storeUserInfoToLocalStorage();
+                try {
+                    Constants.myChatRoomID = (String) dataSnapshot.child("chatRoom").getValue();
+                    Constants.partnerID = (String) dataSnapshot.child("partner").getValue();
+                    Constants.partnerConnected = (Boolean) dataSnapshot.child("partnerConnected").getValue();
+                    Log.i("littleSteps", "Constants updated now updating sharedPrefs");
+                    storeUserInfoToLocalStorage();
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -156,7 +161,7 @@ public class WelcomeActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Log.i("littleSteps", "Data changed in firebase chatroom info tree");
-                updateConstants(dataSnapshot);
+                updateConstants();
                 final ChatroomOpen chatroomOpen = dataSnapshot.getValue(ChatroomOpen.class);
                 Log.i("littleSteps", "received chatroom details from firebase.");
                 try {
@@ -166,6 +171,7 @@ public class WelcomeActivity extends AppCompatActivity {
                         Log.i("littleSteps", "partner is not defined.");
                         stepOne.setVisibility(View.GONE);
                         waitPage.setVisibility(View.VISIBLE);
+                        waiter.setVisibility(View.GONE);
                     }
                     else {
                         Log.i("littleSteps", "partner id is valid & is !null");
