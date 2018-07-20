@@ -41,10 +41,10 @@ public class Splash extends AppCompatActivity {
             /*sharedPreferences contains the shared preferences object.*/
             sharedPreferences = getApplicationContext().getSharedPreferences("duet_prefs", MODE_PRIVATE);
             /* Even if the data is not available sharedPrefs have 'default' value, which in this case is set to
-            * "undef" which means calling writeDataToConstants() will populate the Constants with the data available in the
+            * "undef" which means calling initDefaultConstants() will populate the Constants with the data available in the
             * SharedPrefs, if there isn't any data, then Constants will contain 'undef' value.
             * This method will save calling SharedPrefs every time we require the sharedPrefs. */
-            writeDataToConstants();
+            initDefaultConstants();
 
             /* if the sharedPrefs OR locally stored data is not "undef" the check if all the criteria
             (i.e. if partner is connected and partner has ID) are met if yes then proceed to the MainActivity
@@ -62,9 +62,9 @@ public class Splash extends AppCompatActivity {
             setupChatRoomListener();
         }
     }
-    public void writeDataToConstants(){
+    public void initDefaultConstants(){
         Log.i("littleSteps", "updating constants in splash screen");
-        /*this method is used for getting data stored in shared preferances.
+        /*this method is used for getting data stored in shared preferences.
         * sharedPrefs are populated when a user signed in. else they are empty*/
         Constants.myChatRoomID = sharedPreferences.getString("myChatRoomID", "undef");
         Constants.partnerConnected = sharedPreferences.getBoolean("partnerConnected", false);
@@ -75,10 +75,10 @@ public class Splash extends AppCompatActivity {
         Log.i("littleSteps", "Updating SharedPrefs");
         SharedPreferences pref = getApplicationContext().getSharedPreferences("duet_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = pref.edit();
-        editor.putString("myUid", Constants.myUid);
-        editor.putString("myChatRoomID", Constants.myChatRoomID);
-        editor.putString("partnerID", Constants.partnerID);
-        editor.putBoolean("partnerConnected", Constants.partnerConnected);
+        editor.putString("myUid", myUid);
+        editor.putString("myChatRoomID", myChatRoomID);
+        editor.putString("partnerID", partnerID);
+        editor.putBoolean("partnerConnected", partnerConnected);
         editor.apply();
     }
 
@@ -97,8 +97,8 @@ public class Splash extends AppCompatActivity {
                     Log.i("littleSteps", "one of the partner is missing, changing personal info tree.");
                     startActivity(new Intent(getApplicationContext(), WelcomeActivity.class));
                     myPersonalInfo.child("partner").setValue("undef");
-                    myPersonalInfo.child("partnerConnected").setValue("undef");
-                    storeUserInfoToLocalStorage();
+                    myPersonalInfo.child("partnerConnected").setValue(false);
+                    storeUserInfoToLocalStorage(Constants.myUid, Constants.myChatRoomID, "undef", false);
                     finish();
                 }
             }
@@ -126,8 +126,8 @@ public class Splash extends AppCompatActivity {
 //                    createProfile(Constants.myUid);
                 }
                 try {
-                    /*editor is referance to the sharedPrefs. if sharedPrefs are not available then they are populated in here.
-                    * THis should occur mostly when users uses a new device or uninstalls and reinstalls the application.
+                    /*editor is reference to the sharedPrefs. if sharedPrefs are not available then they are populated in here.
+                    * THis should occur mostly when users uses a new device or uninstalls and re-installs the application.
                     * So get data form firebase and setup sharedPrefs.*/
                     editor = getSharedPreferences("duet_prefs", MODE_PRIVATE).edit();
                     editor.putString("myChatRoomID", (String) dataSnapshot.child("chatRoom").getValue());
@@ -135,7 +135,7 @@ public class Splash extends AppCompatActivity {
                     editor.putBoolean("partnerConnected", (Boolean) dataSnapshot.child("partnerConnected").getValue());
                     editor.apply();
                     /*Once the data is into sharedPrefs, also write it to the Constants. which are accessible throughout the program life.*/
-                    writeDataToConstants();
+                    initDefaultConstants();
 
                     if ((Boolean) dataSnapshot.child("partnerConnected").getValue()) {
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -148,7 +148,7 @@ public class Splash extends AppCompatActivity {
                 }
                 catch (Exception e){
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.e("errot", e.getMessage());
+                    Log.e("LittleSteps", e.getMessage());
                 }
             }
 
