@@ -20,4 +20,7 @@
     <string name="back">Go Back</string>
     <string name="chatroom_created">Great! you\'ve created chatroom, now Copy the ID and share it with your partner</string>
     <string name="chatroom_lonely">Chatroom was created, however your partner has not joined yet. Wait for them to join.</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

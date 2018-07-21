@@ -29,16 +29,16 @@ public class User {
 }
 
 class Personal{
+    String chatRoom;
+    String partner;
+
+
     public Personal(){}
 
     public Personal(String chatRoom, String partner){
         this.chatRoom = chatRoom;
         this.partner = partner;
     }
-
-    String chatRoom;
-    String partner;
-
     public String getChatRoom() {
         return chatRoom;
     }
