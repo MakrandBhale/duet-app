@@ -7,8 +7,12 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.makarand.duet.R;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -31,6 +35,8 @@ public class StepOne extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    @BindView(R.id.yes_button) Button yesButton;
+    @BindView(R.id.no_button) Button noButton;
     public StepOne() {
         // Required empty public constructor
     }
@@ -66,7 +72,34 @@ public class StepOne extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_step_one, container, false);
+        View v =  inflater.inflate(R.layout.fragment_step_one, container, false);
+        ButterKnife.bind(this, v);
+        yesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
+                        //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .replace(R.id.frame, new WithID())
+                        .addToBackStack("WithID")
+                        .commit();
+            }
+        });
+
+        noButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
+                        //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .replace(R.id.frame, new WithoutID())
+                        .addToBackStack("WithoutID")
+                        .commit();
+            }
+        });
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
