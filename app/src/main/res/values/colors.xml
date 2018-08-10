@@ -6,7 +6,7 @@
     <color name="secondaryColor">#ffffff</color>
     <color name="secondaryLightColor">#fafafa</color>
     <color name="secondaryDarkColor">#ededed</color>
-
+    <color name="statusBarDark">#ededed</color>
     <!--<color name="primaryColor">#673ab7</color>-->
     <!--<color name="primaryLightColor">#9a67ea</color>-->
     <!--<color name="primaryDarkColor">#320b86</color>-->
@@ -14,7 +14,7 @@
     <!--<color name="secondaryLightColor">#a4ffff</color>-->
     <!--<color name="secondaryDarkColor">#31b6af</color>-->
     <color name="primaryTextColor">#ffffff</color>
-    <color name="secondaryTextColor">#212121</color>
+    <color name="secondaryTextColor">#424242</color>
     <color name="greenColor">#43A047</color>
     <color name="redColor">#F4511E</color>
 </resources>

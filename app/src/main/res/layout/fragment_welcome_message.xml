@@ -15,16 +15,17 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Hello There"
-        android:fontFamily="@font/nunito_semibold"
-        android:textSize="32sp"
+        android:textColor="@color/secondaryTextColor"
+        android:fontFamily="@font/poppins_semibold"
+        android:textSize="28sp"
         android:layout_marginBottom="8dp"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Its all lonely here, let's set up you up.\nClick following button to Get Started."
-        android:fontFamily="@font/nunito_regular"
-        android:textSize="18sp"/>
+        android:text="@string/lonely"
+        android:fontFamily="@font/poppins_regular"
+        android:textSize="14sp"/>
 
     <Button
         android:id="@+id/getting_started_button"
@@ -34,5 +35,6 @@
         android:text="Get Started"
         android:textColor="@color/primaryTextColor"
         android:layout_marginTop="24dp"
+        android:fontFamily="@font/poppins_semibold"
         />
 </LinearLayout>

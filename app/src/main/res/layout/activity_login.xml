@@ -4,88 +4,128 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/secondaryColor"
+    android:background="@color/statusBarDark"
     tools:context=".LoginActivity"
+
     >
-    <ProgressBar
+
+    <include
+        android:id="@+id/toolbar_import"
+        layout="@layout/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/waiter"
-        style="@style/Base.Widget.AppCompat.ProgressBar.Horizontal"
-        android:visibility="gone"
-        />
-    <LinearLayout
+        android:layout_gravity="top" />
+
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
-
-        <TextView
-            android:id="@+id/login_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="24dp"
-            android:fontFamily="@font/nunito_bold"
-            android:text="@string/login_text"
-            android:textAlignment="center"
-            android:textSize="36sp" />
-
-        <EditText
-            android:id="@+id/email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            android:background="@drawable/custom_edit_text"
-            android:fontFamily="@font/nunito_regular"
-            android:hint="@string/email_text_hint"
-            android:inputType="textEmailAddress"
-            android:maxLines="1"
-            android:padding="16dp"
-            android:textCursorDrawable="@color/primaryColor" />
-
-        <EditText
-            android:id="@+id/password"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="12dp"
-            android:background="@drawable/custom_edit_text"
-            android:fontFamily="@font/nunito_regular"
-            android:hint="@string/password_text_hint"
-            android:inputType="textPassword"
-            android:maxLines="1"
-            android:padding="16dp" />
-
-        <Button
-            android:id="@+id/login_button"
-            android:layout_width="156dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:background="@drawable/custom_button_background"
-            android:fontFamily="@font/nunito_bold"
-            android:text="@string/login_text"
-            android:textColor="@color/secondaryColor"
-            android:textSize="18sp" />
+        android:layout_below="@+id/toolbar_import"
+        app:cardCornerRadius="12dp"
+        android:layout_margin="4dp">
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            >
 
             <TextView
+                android:id="@+id/login_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_regular"
-                android:text="@string/not_a_member" />
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="4dp"
+                android:fontFamily="@font/poppins_medium"
+                android:text="Hello again!"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textColor="@color/secondaryTextColor"/>
 
             <TextView
-                android:id="@+id/signup_link"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                android:text="Login to your Duet account."
+                android:textAlignment="center"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/email"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/custom_edit_text"
+                android:fontFamily="@font/poppins_regular"
+                android:hint="@string/email_text_hint"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:padding="14dp"
+                android:textCursorDrawable="@color/primaryColor"
+                android:textSize="16sp"/>
+
+            <EditText
+                android:id="@+id/password"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:background="@drawable/custom_edit_text"
+                android:fontFamily="@font/poppins_regular"
+                android:hint="@string/password_text_hint"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:padding="14dp"
+                android:textSize="16sp"/>
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/nunito_semibold"
-                android:text=" Sign up"
-                android:textColor="@color/primaryColor" />
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_regular"
+                    android:text="@string/not_a_member"
+                    android:textColor="@color/secondaryTextColor"/>
+
+                <TextView
+                    android:id="@+id/signup_link"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/poppins_semibold"
+                    android:text=" Sign up"
+                    android:textColor="@color/primaryColor" />
+            </LinearLayout>
+            <ProgressBar
+                android:id="@+id/waiter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_margin="4dp"
+                />
+            <LinearLayout
+                android:id="@+id/empty_space"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                />
+
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="156dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/custom_button_background"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="@string/login_text"
+                android:textColor="@color/secondaryColor"
+                android:textSize="18sp"
+                android:layout_margin="12dp"
+                />
         </LinearLayout>
-    </LinearLayout>
+    </android.support.v7.widget.CardView>
+
 
 </RelativeLayout>

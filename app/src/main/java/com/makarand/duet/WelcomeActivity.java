@@ -1,27 +1,20 @@
 package com.makarand.duet;
 
-import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.app.Fragment;
-
-import android.widget.Button;
 
 import com.makarand.duet.FragmentContainer.StepOne;
 import com.makarand.duet.FragmentContainer.WelcomeMessage;
-import com.makarand.duet.FragmentContainer.WithID;
-import com.makarand.duet.FragmentContainer.WithoutID;
 
 import butterknife.ButterKnife;
 
 
 public class WelcomeActivity extends AppCompatActivity implements
         WelcomeMessage.OnFragmentInteractionListener,
-        StepOne.OnFragmentInteractionListener,
-        WithID.OnFragmentInteractionListener,
-        WithoutID.OnFragmentInteractionListener{
+        StepOne.OnFragmentInteractionListener
+        {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

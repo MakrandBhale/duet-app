@@ -4,10 +4,14 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.makarand.duet.R;
 
@@ -35,8 +39,10 @@ public class StepOne extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    @BindView(R.id.yes_button) Button yesButton;
-    @BindView(R.id.no_button) Button noButton;
+    /*If the edittext contains an id then the haveID will be true.*/
+    private boolean haveID = false;
+    @BindView(R.id.next_button) Button nextButton;
+    @BindView(R.id.id_container) EditText idContainer;
     public StepOne() {
         // Required empty public constructor
     }
@@ -74,32 +80,74 @@ public class StepOne extends Fragment {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_step_one, container, false);
         ButterKnife.bind(this, v);
-        yesButton.setOnClickListener(new View.OnClickListener() {
+        idContainer.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View v) {
-                getFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
-                        //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .replace(R.id.frame, new WithID())
-                        .addToBackStack("WithID")
-                        .commit();
-            }
-        });
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        noButton.setOnClickListener(new View.OnClickListener() {
+            }
+
             @Override
-            public void onClick(View v) {
-                getFragmentManager()
-                        .beginTransaction()
-                        .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
-                        //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .replace(R.id.frame, new WithoutID())
-                        .addToBackStack("WithoutID")
-                        .commit();
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(s.length() > 5 ){
+                    nextButton.setText(R.string.connect);
+                    haveID = true;
+                }
+                else {
+                    nextButton.setText(R.string.no_id);
+                    haveID = false;
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(haveID)
+                    connect();
+                else {
+                    createNewID();
+                }
+            }
+        });
+//        yesButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                getFragmentManager()
+//                        .beginTransaction()
+//                        .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
+//                        //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+//                        .replace(R.id.frame, new WithID())
+//                        .addToBackStack("WithID")
+//                        .commit();
+//            }
+//        });
+//
+//        noButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                getFragmentManager()
+//                        .beginTransaction()
+//                        .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
+//                        //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+//                        .replace(R.id.frame, new WithoutID())
+//                        .addToBackStack("WithoutID")
+//                        .commit();
+//            }
+//        });
         return v;
+    }
+
+    private void createNewID() {
+        Toast.makeText(getActivity().getApplicationContext(), "Creating new", Toast.LENGTH_LONG).show();
+
+    }
+
+    private void connect() {
+        Toast.makeText(getActivity().getApplicationContext(), "Connecting", Toast.LENGTH_LONG).show();
     }
 
     // TODO: Rename method, update argument and hook method into UI event

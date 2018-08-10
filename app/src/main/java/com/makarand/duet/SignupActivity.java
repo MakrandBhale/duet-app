@@ -5,6 +5,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -50,7 +51,7 @@ public class SignupActivity extends AppCompatActivity {
 
     @OnClick(R.id.signup_button)
     public void signup(Button button){
-        toggleBar(true);
+        toggleInteraction(true);
         if(getContent(email).length() > 0 && getContent(password).length() > 0 && getContent(username).length() > 0){
             mAuth.createUserWithEmailAndPassword(getContent(email), getContent(password))
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -66,13 +67,13 @@ public class SignupActivity extends AppCompatActivity {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-                        toggleBar(false);
+                        toggleInteraction(false);
                     }
                 });
         }
         else {
             Toast.makeText(getApplicationContext(), "Oups! You forgot to write something.", Toast.LENGTH_LONG).show();
-            toggleBar(false);
+            toggleInteraction(false);
         }
     }
 
@@ -85,7 +86,7 @@ public class SignupActivity extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         startActivity(new Intent(SignupActivity.this, Splash.class));
                         finish();
-                        toggleBar(false);
+                        toggleInteraction(false);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -101,17 +102,17 @@ public class SignupActivity extends AppCompatActivity {
         return editText.getText().toString().trim();
     }
 
-    public void toggleBar(Boolean bool){
-        if(bool)
+    private void toggleInteraction(boolean show) {
+        if(show){
             waiter.setVisibility(View.VISIBLE);
-        else
-        waiter.setVisibility(View.GONE);
-        waiter.setIndeterminate(bool);
-        email.setEnabled(!bool);
-        password.setEnabled(!bool);
-        username.setEnabled(!bool);
-        signupButton.setEnabled(!bool);
-    }
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
+        else {
+            waiter.setVisibility(View.GONE);
 
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
+    }
 }
 

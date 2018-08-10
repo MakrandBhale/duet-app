@@ -1,43 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".FragmentContainer.StepOne"
     android:padding="18dp"
     android:orientation="vertical"
-    android:gravity="center">
+    android:gravity="center_horizontal"
+    android:baselineAligned="false"
+    android:clipToPadding="false">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="24dp"
+        android:fontFamily="@font/poppins_semibold"
         android:text="Do you have an ID?"
-        android:fontFamily="@font/nunito_semibold"
-        android:textSize="18sp"/>
+        android:textColor="@color/secondaryTextColor"
+        android:textSize="18sp" />
 
-    <LinearLayout
+    <EditText
+        android:id="@+id/id_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/custom_edit_text"
+        android:fontFamily="@font/poppins_regular"
+        android:hint="Paste the ID here"
+        android:maxLines="1"
+        android:layout_below="@+id/question"/>
+
+    <TextView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/yes_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/custom_button_background"
-            android:textColor="@color/primaryTextColor"
-            android:text="Yes!"
-            android:layout_margin="8dp"
-            android:fontFamily="@font/nunito_semibold"
-            />
-        <Button
-            android:id="@+id/no_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/custom_button_background"
-            android:textColor="@color/primaryTextColor"
-            android:text="No"
-            android:fontFamily="@font/nunito_semibold"
-            android:layout_margin="8dp"
-            />
-    </LinearLayout>
-</LinearLayout>
+        android:layout_height="wrap_content"
+        android:text="@string/about_id"
+        android:layout_below="@id/id_container"
+        android:layout_marginTop="8dp"
+        />
+    <Button
+        android:id="@+id/next_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/custom_button_background"
+        android:text="I Don't have ID"
+        android:textColor="@color/primaryTextColor"
+        android:fontFamily="@font/poppins_semibold"
+        android:padding="4dp"/>
+</RelativeLayout>

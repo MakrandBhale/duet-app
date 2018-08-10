@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -50,25 +51,25 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(getApplicationContext(), SignupActivity.class));
-                finish();
             }
         });
     }
 
     @OnClick(R.id.login_button)
     void login(){
-        waiter.setVisibility(View.VISIBLE);
         String emailText = email.getText().toString().trim();
         String passwordText = password.getText().toString().trim();
         if(emailText.length() > 0 && passwordText.length() > 0){
+            toggleInteraction(true);
             mAuth.signInWithEmailAndPassword(emailText, passwordText)
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
                                 Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_LONG).show();
-                                waiter.setVisibility(View.GONE);
+                                toggleInteraction(false);
                                 startActivity(new Intent(getApplicationContext(), Splash.class));
+                                finish();
                             }
                         }
                     })
@@ -77,12 +78,25 @@ public class LoginActivity extends AppCompatActivity {
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(getApplicationContext(),"Error: " + e.getMessage()  ,Toast.LENGTH_LONG).show();
                             Log.e("Login error", e.getMessage());
-                            waiter.setVisibility(View.GONE);
+                            toggleInteraction(false);
                         }
                     });
         }
         else {
             Toast.makeText(getApplicationContext(), "Oups! You forgot to write something.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void toggleInteraction(boolean show) {
+        if(show){
+            waiter.setVisibility(View.VISIBLE);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+        }
+        else {
+            waiter.setVisibility(View.GONE);
+
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
         }
     }
 }
