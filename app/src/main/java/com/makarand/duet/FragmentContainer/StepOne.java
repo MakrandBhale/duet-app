@@ -1,11 +1,13 @@
 package com.makarand.duet.FragmentContainer;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +15,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.makarand.duet.Constants.Constants;
 import com.makarand.duet.R;
 
 import butterknife.BindView;
@@ -43,6 +49,10 @@ public class StepOne extends Fragment {
     private boolean haveID = false;
     @BindView(R.id.next_button) Button nextButton;
     @BindView(R.id.id_container) EditText idContainer;
+    /*Firestore instance*/
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String newID;
+
     public StepOne() {
         // Required empty public constructor
     }
@@ -133,8 +143,8 @@ public class StepOne extends Fragment {
 //                        .beginTransaction()
 //                        .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
 //                        //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-//                        .replace(R.id.frame, new WithoutID())
-//                        .addToBackStack("WithoutID")
+//                        .replace(R.id.frame, new WaitingFragment())
+//                        .addToBackStack("WaitingFragment")
 //                        .commit();
 //            }
 //        });
@@ -142,8 +152,34 @@ public class StepOne extends Fragment {
     }
 
     private void createNewID() {
-        Toast.makeText(getActivity().getApplicationContext(), "Creating new", Toast.LENGTH_LONG).show();
+        /*Creating a new ID and starting next fragment where user will wait for partner to connect.*/
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        newID = db.collection("chatrooms").document().getId();
+        Constants.globalID = newID;
+        DocumentReference userRef = db.collection("users").document(uid);
+        /*Updating the user info tree with the new chatroom id.*/
+        userRef.update("personal.chatroom", newID);
+        /*updating the "newUser" status to false, which will ensure that user will see the
+        * Waiting Fragment instead of going through this process again.*/
+        userRef.update("open.newUser", false);
 
+        storeToLocalStorage(newID);
+        getFragmentManager()
+                .beginTransaction()
+                .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
+                //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(R.id.frame, new WaitingFragment())
+                .addToBackStack("StepOne")
+                .commit();
+    }
+
+    private void storeToLocalStorage(String newID) {
+        /*Writing to shared preferences so that we can call the local storage
+        * rather than querying online.*/
+        SharedPreferences preferences = getActivity().getSharedPreferences(Constants.sharedPrefName, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("chatRoomID", newID);
+        editor.commit();
     }
 
     private void connect() {

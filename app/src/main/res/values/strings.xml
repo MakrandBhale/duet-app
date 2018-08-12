@@ -23,6 +23,6 @@
     <string name="no_id">I don\'t have an ID</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="lonely">"Its all lonely here, let's set up you up.\nClick following button to Get Started."</string>
+    <string name="lonely">"Let's set up you up.\nClick following button to Get Started."</string>
     <string name="about_id">"An ID is a link to the chatroom that you and your partner will share. "</string>
 </resources>

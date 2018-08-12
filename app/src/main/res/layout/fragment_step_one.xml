@@ -51,5 +51,6 @@
         android:text="I Don't have ID"
         android:textColor="@color/primaryTextColor"
         android:fontFamily="@font/poppins_semibold"
-        android:padding="4dp"/>
+        android:padding="4dp"
+        />
 </RelativeLayout>

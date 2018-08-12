@@ -1,8 +1,8 @@
 package com.makarand.duet.model;
 
 public class User {
-    Personal personal;
-    Open open;
+    private Personal personal;
+    private Open open;
     public User() {
     }
 
@@ -29,22 +29,22 @@ public class User {
 }
 
 class Personal{
-    String chatRoom;
-    String partner;
+    private String chatroom,partner;
+
 
 
     public Personal(){}
 
-    public Personal(String chatRoom, String partner){
-        this.chatRoom = chatRoom;
+    public Personal(String chatroom, String partner){
+        this.chatroom = chatroom;
         this.partner = partner;
     }
-    public String getChatRoom() {
-        return chatRoom;
+    public String getChatroom() {
+        return chatroom;
     }
 
-    public void setChatRoom(String chatRoom) {
-        this.chatRoom = chatRoom;
+    public void setChatroom(String chatroom) {
+        this.chatroom = chatroom;
     }
 
     public String getPartner() {
@@ -57,16 +57,17 @@ class Personal{
 }
 
 class Open{
-    public Open(){
+    private String email, uid, username;
 
-    }
+    public Open(){}
 
     public Open(String email, String uid, String username){
         this.email = email;
         this.uid = uid;
         this.username = username;
     }
-    String email, uid, username;
+
+
 
     public String getEmail() {
         return email;

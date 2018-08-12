@@ -1,33 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/background_gradient"
     android:gravity="center_vertical"
     android:orientation="vertical"
     tools:context=".WelcomeActivity">
-    <include
-        android:id="@+id/toolbar_import"
-        layout="@layout/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top" />
-
-    <android.support.v7.widget.CardView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar_import"
-        app:cardCornerRadius="12dp"
-        android:layout_margin="4dp"
+        android:id="@+id/splash_screen">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/ic_launcher"
+            android:id="@+id/branding"/>
+        <ProgressBar
+            android:id="@+id/waiter"
+            android:layout_margin="4dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/branding"
+            android:layout_gravity="center"
+            android:visibility="visible"
+            android:layout_centerHorizontal="true"
+            />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/background"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible"
         >
 
-        <FrameLayout
-            android:id="@+id/frame"
+        <include
+            android:id="@+id/toolbar_import"
+            layout="@layout/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top" />
+
+        <android.support.v7.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/custom_frame_background"
-            android:visibility="visible"/>
-    </android.support.v7.widget.CardView>
+            android:layout_below="@+id/toolbar_import"
+            android:layout_margin="4dp"
+            app:cardCornerRadius="12dp">
+
+
+            <FrameLayout
+                android:id="@+id/frame"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/custom_frame_background"
+                android:visibility="visible" />
+        </android.support.v7.widget.CardView>
+    </RelativeLayout>
 </RelativeLayout>
