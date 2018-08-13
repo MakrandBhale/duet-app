@@ -68,12 +68,12 @@ public class LoginActivity extends AppCompatActivity {
                             if(task.isSuccessful()){
                                 Toast.makeText(getApplicationContext(), "Login successful!", Toast.LENGTH_LONG).show();
                                 toggleInteraction(false);
-                                /*Here after successful login the Splash activity is opened instead
+                                /*Here after successful login the MainActivity is opened instead
                                 * of opening Welcome activity (Like I did in Signup).
-                                * The Splash activity contains the logic which will tell if the user
+                                * The Main activity contains the logic which will tell if the user
                                 * is new or returning OR if the user has completed the initial steps of
                                 * application like creating chatroom.*/
-                                startActivity(new Intent(getApplicationContext(), Splash.class));
+                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                 finish();
                             }
                         }

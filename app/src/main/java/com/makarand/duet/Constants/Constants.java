@@ -13,5 +13,5 @@ public class Constants {
     public static String partnerID;
     public static String myChatRoomID = null;
     public static Boolean partnerConnected = false;
-    public static String globalID;
+    public static String globalChatroomID;
 }

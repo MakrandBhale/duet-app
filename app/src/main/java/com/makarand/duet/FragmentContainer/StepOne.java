@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.annotation.NonNull;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -15,11 +16,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 import com.makarand.duet.Constants.Constants;
 import com.makarand.duet.R;
+import com.makarand.duet.model.Chatroom;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,7 +58,7 @@ public class StepOne extends Fragment {
     @BindView(R.id.id_container) EditText idContainer;
     /*Firestore instance*/
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private String newID;
+    private DocumentReference chatroomRef;
 
     public StepOne() {
         // Required empty public constructor
@@ -90,6 +97,9 @@ public class StepOne extends Fragment {
         // Inflate the layout for this fragment
         View v =  inflater.inflate(R.layout.fragment_step_one, container, false);
         ButterKnife.bind(this, v);
+        chatroomRef = db
+                .collection("chatrooms")
+                .document(Constants.globalChatroomID);
         idContainer.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -153,24 +163,46 @@ public class StepOne extends Fragment {
 
     private void createNewID() {
         /*Creating a new ID and starting next fragment where user will wait for partner to connect.*/
+        /*Also with creating ID, creating a chatroom tree. All this will be done using Batch writes*/
         String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        newID = db.collection("chatrooms").document().getId();
-        Constants.globalID = newID;
+        /*creating model class object (POJO) for writing participants*/
+        Chatroom chatroom = new Chatroom(uid, "undef");
+        /*the following if condition prevents users from creating multiple chatrooms.
+        * the Constants.globalChatroomID contains the data that is taken from shared prefs or from the firebase
+        * itself. If the users hasn't created any other chatroom, if they did then the chatroom won't be "undef"
+        * if its "undef" then its safe to say that the user is not associated with any chatroom*/
+        if(Constants.globalChatroomID.equals("undef"))
+            Constants.globalChatroomID = db.collection("chatrooms").document().getId();
         DocumentReference userRef = db.collection("users").document(uid);
-        /*Updating the user info tree with the new chatroom id.*/
-        userRef.update("personal.chatroom", newID);
-        /*updating the "newUser" status to false, which will ensure that user will see the
-        * Waiting Fragment instead of going through this process again.*/
-        userRef.update("open.newUser", false);
+        /*Writing data using batch operation.*/
+        WriteBatch batch = db.batch();
+        /*setting key to user personal info tree*/
+        batch.update(userRef, "personal.chatroom", Constants.globalChatroomID);
+        /*changing the value of newUSer to false as the has a chatroom and is no longer new.*/
+        batch.update(userRef, "open.newUser", false);
+        /*creating chatroom which contains description of participants.*/
+        batch.set(chatroomRef, chatroom);
 
-        storeToLocalStorage(newID);
-        getFragmentManager()
-                .beginTransaction()
-                .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
-                //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(R.id.frame, new WaitingFragment())
-                .addToBackStack("StepOne")
-                .commit();
+        batch.commit().addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                if(task.isSuccessful()){
+                    storeToLocalStorage(Constants.globalChatroomID);
+                    getFragmentManager()
+                            .beginTransaction()
+                            .setCustomAnimations(R.animator.slide_in_from_right, R.animator.slide_out_to_left, R.animator.slide_in_from_left, R.animator.slide_out_to_right)
+                            //.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                            .replace(R.id.frame, new WaitingFragment())
+                            .addToBackStack("StepOne")
+                            .commit();
+
+                }
+                else {
+                    Toast.makeText(getActivity().getApplicationContext(), "Error occurred, possibly network issue.", Toast.LENGTH_SHORT).show();
+                    Log.e("StepOne", task.getException().toString());
+                }
+            }
+        });
     }
 
     private void storeToLocalStorage(String newID) {
@@ -183,7 +215,55 @@ public class StepOne extends Fragment {
     }
 
     private void connect() {
-        Toast.makeText(getActivity().getApplicationContext(), "Connecting", Toast.LENGTH_LONG).show();
+        String currentID = idContainer.getText().toString().trim();
+        /*currentID is used to get the id from the textbox. I don't know why android
+        * calls textbox edittext. such a stupid move.*/
+        final DocumentReference newChatroomRef = db
+                .collection("chatrooms")
+                .document(currentID);
+        /*As I have added feature to roll back even if a chatroom is created, it is possible someone
+        * might copy IF from waiting fragment and come back and paste it here, which will be like sucking up own dick.
+        * To avoid it first check if the chatroom exists, then add the user to the member list.*/
+        newChatroomRef
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+                        if(documentSnapshot.exists()) {
+                            Chatroom chatroom = documentSnapshot.toObject(Chatroom.class);
+                            String p1 = "undef", p2 = "undef";
+                            try {
+                                p1 = chatroom.getP1();
+                                p2 = chatroom.getP2();
+                            }
+                            catch (Exception e){
+                                Log.e("StepOne", e.toString());
+                            }
+
+                            if(p1.equals(Constants.myUid) || p2.equals(Constants.myUid)){
+                                Toast.makeText(getActivity().getApplicationContext(), "You are already in the chatroom.", Toast.LENGTH_LONG).show();
+                            }
+                            else {
+                                newChatroomRef.update("p2", Constants.myUid)
+                                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<Void> task) {
+                                                if (task.isSuccessful()) {
+                                                    Toast.makeText(getActivity().getApplicationContext(), "Success", Toast.LENGTH_SHORT).show();
+                                                }
+                                                else {
+                                                    Toast.makeText(getActivity().getApplicationContext(), "Error occurred, please check your internet connection", Toast.LENGTH_SHORT).show();
+                                                    
+                                                }
+                                            }
+                                        });
+                            }
+                        }
+                        else {
+                            Toast.makeText(getActivity().getApplicationContext(), "Chatroom does not exists. Try creating a new one.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -225,3 +305,4 @@ public class StepOne extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 }
+/*TODO: add a destory chatroom feature [IMP]*/

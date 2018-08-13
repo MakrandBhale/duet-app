@@ -1,11 +1,11 @@
 package com.makarand.duet.model;
 
-public class ChatroomOpen {
+public class Chatroom {
     public String p1, p2;
-    public ChatroomOpen() {
+    public Chatroom() {
     }
 
-    public ChatroomOpen(String p1, String p2){
+    public Chatroom(String p1, String p2){
         this.p1 = p1;
         this.p2 = p2;
     }
